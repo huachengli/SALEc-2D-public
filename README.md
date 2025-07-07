@@ -4,7 +4,7 @@ SALEc2d is a 2d version of [SALEc](https://github.com/huachengli/SALEc-public) a
 
 Features implemented in SALEc2d:
 
-1. Parallelism/use MPI to accelerated the simulation.
+1. Parallelism/use MPI to accelerate the simulation.
 
 2. Absorbing Boundary/Sponge boundary condition(SBC) and Perfect Match layers(PML) boundary have been implemented. The layers recommended for SBC and PML are 50 and 30 respectively.
 
