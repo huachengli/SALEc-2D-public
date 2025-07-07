@@ -1,0 +1,4 @@
+most of the eos data in iSALE2D-dellen can be used in SALEc
+with some preprocessing
+
+eos files are same for SALEc (3D version) and SALEc-2D
