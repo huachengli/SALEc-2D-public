@@ -17,11 +17,7 @@ Features implemented in SALEc2d:
 [iSALE-2D unexpected crashed condition](http://dx.doi.org/10.13140/RG.2.2.36277.45282)
 ![image](https://github.com/huachengli/SALEc-2D-public/blob/main/example/sup_crash_compare.mp4)
 
-```html
-<video id="video" controls="" preload="none" poster="">
-      <source id="mp4" src="https://github.com/huachengli/SALEc-2D-public/blob/main/example/sup_crash_compare.mp4" type="video/mp4">
-</videos>
-```
+<video src="https://github.com/huachengli/SALEc-2D-public/blob/main/example/sup_crash_compare.mp4" controls="controls" width="500" ></video>
 
 left panel (x<0) is the result from iSALE2D and right panel(x>0) is the stable solution generated from SALEc2D
 
