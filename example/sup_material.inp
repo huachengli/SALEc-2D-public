@@ -1,0 +1,38 @@
+#ISMAT
+-----------------------------------------------------------------------------
+MATNAME       Material name                 : dunite_     : basalt_
+EOSNAME       EOS name                      : dunite_     : basalt_
+EOSTYPE       EOS type                      : aneos       : aneos
+STRMOD        Strength model                : ROCK        : ROCK
+DAMMOD        Damage model                  : IVANOV      : IVANOV
+ACFL          Acoustic fluidisation         : NONE        : NONE
+PORMOD        Porosity model                : NONE        : NONE
+THSOFT        Thermal softening             : OHNAKA      : OHNAKA
+LDWEAK        Low density weakening         : NONE        : NONE
+----------------------------------------------------------------------------
+POIS          pois                          : 2.5000D-01  : 2.5000D-01
+----------------------------------------------------------------------------
+TMELT0        tmelt0                        : 1.3730D+03  : 1.3600D+03
+TFRAC         tfrac                         : 1.1000D+00  : 0.7000D+00
+ASIMON        a_simon                       : 1.5200D+09  : 4.5000D+09
+CSIMON        c_simon                       : 4.0500D+00  : 3.0000D+00
+----------------------------------------------------------------------------
+YDAM0         ydam0 (ycoh)                  : 1.0000D+04  : 1.0000D+04
+FRICDAM       fricdam                       : 6.0000D-01  : 6.0000D-01
+YLIMDAM       ylimdam                       : 3.5000D+09  : 3.5000D+09
+----------------------------------------------------------------------------
+YINT0         yint0                         : 1.0000D+07  : 2.0000D+07
+FRICINT       fricint                       : 1.5800D+00  : 1.4000D+00
+YLIMINT       ylimint                       : 3.5000D+09  : 3.5000D+09
+----------------------------------------------------------------------------
+IVANOV_A      damage parameter              : 1.0000D-04  : 1.0000D-04
+IVANOV_B      damage parameter              : 1.0000D-11  : 1.0000D-11
+IVANOV_C      damage parameter              : 3.0000D+08  : 3.0000D+08
+----------------------------------------------------------------------------
+ALPHA0        initial porosity              : 1.0000D+00  : 1.0500D+00
+EPSE0         Elastic threshold             : -1.000D-05  : -1.880D-04
+ALPHAX        Transition                    : 1.0000D+00  : 1.0000D+00
+KAPPA         Exp Coefficient               : 0.9800D+00  : 0.9000D+00
+CHI           Sound speed ratio             : 1.0000D+00  : 0.3000D+00
+----------------------------------------------------------------------------
+<<END

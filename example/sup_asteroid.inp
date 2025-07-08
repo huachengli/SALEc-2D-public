@@ -1,0 +1,68 @@
+#ISINP
+------------------------------------------------------------------------
+--- this is the new input file used by iSALE versions of v7.0 and higher
+------------------------------------------------------------------------
+------------------- General Model Info ---------------------------------
+VERSION       __DO NOT MODIFY__             : 4.1
+DIMENSION     dimension of input file       : 2
+PATH          Data file path                : ./
+MODEL         Modelname                     : model0620-3
+------------------- Mesh Geometry Parameters ---------------------------
+GRIDH         horizontal cells              : 0           : 300         : 110
+GRIDV         vertical cells                : 150         : 200         : 60
+GRIDEXT       ext. factor                   : 1.05d0
+GRIDSPC       grid spacing                  : 8.0
+CYL           Cylind. geometry              : 1.0D0
+GRIDSPCM      max. grid spacing             : -20.D0
+------------------- Global setup parameters -----------------------------
+S_TYPE        setup type                    : DEFAULT
+T_SURF        Surface temp                  : 293.D0
+GRAV_V        gravity                       : -1.622D0
+------------------- Projectile ("Object") Parameters --------------------
+OBJNUM        number of objects             : 1
+OBJRESH       CPPR horizontal               : 13
+OBJVEL        object velocity               : -1.8D4
+OBJMAT        object material               : dunite_
+OBJDAM        object damage                 : 0.D0
+OBJTYPE       object type                   : SPHEROID
+------------------- Target Parameters ----------------------------------
+LAYNUM        layers number                 : 1
+LAYPOS        layer position                : 280
+LAYMAT        layer material                : basalt_
+LAYTPROF      thermal profile               : CONST
+------------------- Time Parameters ------------------------------------
+DT            initial time increment        : 5.0D-3
+DTMAX         maximum timestep              : 5.D-2
+TEND          end time                      : 1.001D2
+DTSAVE        save interval                 : 1.0D-1
+------------------- Ac. Fluid. Parameters (see also material.inp) ------
+TOFF          toff                          : 16.D0
+CVIB          c_vib                         : 0.1D0
+VIB_MAX       Max. vib.vel.                 : 200.
+------------------- Boundary Condition Parameters ----------------------
+--------------- 0=no slip,1=free slip, 2=cont.outflow ------------------
+BND_L         left                          : FREESLIP
+BND_R         right                         : FREESLIP
+BND_B         bottom                        : NOSLIP
+BND_T         top                           : OUTFLOW
+------------------- Numerical Stability Parameters ---------------------
+ROCUTOFF      ro_cutoff                     : 0.01
+AVIS          art. visc. linear             : 0.24D0
+AVIS2         art. visc. quad.              : 1.20D0
+------------------- Tracer Particle Parameters -------------------------
+--- if TR_SAVE == 1, only Trx and Try are automatically added to
+--- the variable list. If additional variables shall be calculated
+--- and stored, you have to set them in 'Tracer fields'.
+-------- TR_NX/NY is the number of tracers in x/y-direction
+-------  TR_DX/DY is the interval between tracers (usually the same as dx/dy)
+TR_QUAL       integration qual.             : 1
+TR_SPCH       tracer spacing X              : -1.D0       : -1.D0
+TR_SPCV       tracer spacing Y              : -1.D0       : -1.D0
+TR_VAR        add. tracer fiels             : #TrP-TrT#
+------------------- Control parameters (global) ------------------------
+STRESS        Consider stress               : 1
+------------------- Data Saving Parameters -----------------------------
+QUALITY       Compression rate              : -50
+VARLIST       List of variables             : #Den-Tmp-Pre-Sie-Yld-YAc-Dam-VEL#
+------------------------------------------------------------------------
+<<END

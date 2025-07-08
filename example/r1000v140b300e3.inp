@@ -1,0 +1,129 @@
+# inputfile of sale2d
+[processor]
+    npgx    = 16 /* number of processors in X direction */
+    npgy    = 16
+
+[mesh]
+    dx  = 50.0 /*spacing of grid in X direction */
+    dy  = 50.0
+    npx = 64  /* number of vertexes in X direction */
+    npy = 64
+    Oy  = 0.6
+    Ox  = 0.0
+    ext = on
+    ex  = [1.05, 0 ,40]
+    ey  = [1.05, 40,30]
+
+[cycle]
+    dt0        = 1.0e-5
+    maxdt      = 2.5e-1
+    time0      = 0.0     /*start time*/
+    time1      = 2001.0 /* end  time*/
+    maxstep    = 2000000  /*maximum step*/
+
+[output]
+    prefix    = ParaTest
+    format    = binary
+    time      = 5  /* the time interval to output */
+    init      = 0
+    out_cycle = -1
+
+[projectile]
+    material = dunite_
+    radiu    = 1000.0
+    center   = [0.0, 1000.0]
+    velocity = [0.0, -14000.0]
+    damage   = [const,1.0]
+    pressure = [const,1.0]
+    temperature = [const,293.0]
+    density = [derived,]
+
+[target]
+    type     = plane
+    number   = 2
+    material = [ granit2, dunite_ ]
+    depth    = [ 50.0e3, 600e3  ]
+    damage   = [const,0.0]
+    temperature = [convective, 293.0]
+    max_depth = 600.0e3
+    surf_gravity = 1.622
+    surf_dtdz = 15.0e-3
+    d_lith = 500.0e3
+    d_mantle = 0.0
+    r_planet = 1.74e6
+
+[condition]
+    gravity = [0., -1.622]
+
+[boundary]
+    bottom= fixed
+    top   = outflow
+    left  = freeslip
+    right = freeslip
+
+
+[material]
+    nm      = 3
+    // the first material is reserved for vacuum, cannot be changed !!!
+    postfix = [null   ,  aneos.td,   aneos.td]
+    name    = [vacuum_,  granit2, dunite_]
+
+    // other
+    Poisson = [,         0.30,         0.25]
+
+    // Thermal parameters
+    SimonA   = [,  6.00e9,   1.52e9]
+    SimonC   = [,    3.00,    4.05]
+    SimonT0  = [,  1.673e3,   1.373e3]
+    OhnakaXi = [,     1.2,     1.1]
+
+    // (Rock) strength parameters
+    yshear  = [,RockStrengthT , RockStrengthT]
+    yint0   = [,1.00e7        , 1.0e7]
+    yintfri = [,2.00          ,  1.58]
+    yintlim = [,2.50e9        , 3.50e9]
+    ydam0   = [,1.0e4         ,  1.0e4]
+    ydamfri = [,0.60          ,   0.60]
+    ydamlim = [,2.50e9 ,        3.5e9]
+
+    // damage model
+    damage  = [, Ivanov, Ivanov]
+    IvanA   = [,    1.0e-4 , 1.0e-4    ]
+    IvanB   = [,    1.0e-11,1.0e-11    ]
+    IvanC   = [,      3.0e8,  3.0e8    ]
+    Pbd     = [, 3.37e9, 3.63e9]
+    Pbp     = [, 4.54e9, 4.80e9]
+
+    // ACFL Block Model parameter
+    BlockSize  = [,  1000.0,  1000.0]
+    GammaEta   = [,  0.015  ,  0.015]
+    GammaBeta  = [,  300.0 ,  300.0]
+    Toff       = [,   120.0 ,   120.0]
+    Cvib       = [,    0.1 ,    0.1]
+    Vibmax     = [,  200.0 ,  200.0]
+    Pvlim      = [, 2.5e10 , 2.5e10]
+    // porosity model
+    Porosity  =  [, None, None]
+    Alpha0    =  [, 1.05, 1.00]
+    Alphax    =  [, 1.00, 1.00]
+    epse0     =  [,-1.88e-4, -1.00e-5]
+    Kappa     =  [, 0.90, 0.98]
+    chi       =  [, 0.30, 1.00]
+[ejecta]
+    threshold = 2.0
+    friction  = 0.0
+
+[numerical]
+    AVISQ  = 1.20  /*quad*/
+    AVISL  = 0.50   /*linear*/
+    ANC    = 0.10
+    MaxVelocity = -1.67
+    MinDensity  = 0.1
+    damping   = pml2
+    #damp_time = 2000.0
+    DampX = 40
+    DampY = 40
+    LambdaX = 10.
+    LambdaY = 10.
+    partpres = 0
+    tarcer_strip = 1
