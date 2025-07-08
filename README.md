@@ -28,6 +28,8 @@ left panel (x<0) is the result from iSALE2D and right panel(x>0) is the stable s
 
 ![image](example/zy_d112v125.gif)
 
+Black line is morphology of Zhinyu crater from SLDEM2015.
+
 ##### complex crater
 
 [input](r1000v140b300e3.inp)
