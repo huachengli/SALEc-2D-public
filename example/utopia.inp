@@ -1,0 +1,119 @@
+# inputfile of sale2d
+[processor]
+    npgx    = 8 /* number of processors in X direction */
+    npgy    = 24
+
+[mesh]
+    dx  = 10.0e3 /*spacing of grid in X direction */
+    dy  = 10.0e3
+    npx = 64  /* number of vertexes in X direction */
+    npy = 64
+    Oy  = 0.6
+    Ox  = 0.0
+    ext = on
+    ex  = [1.05, 0 ,30]
+    ey  = [1.05, 20,20]
+
+[cycle]
+    dt0        = 3.0e-3
+    maxdt      = 5.0e-2
+    time0      = 0.0     /*start time*/
+    time1      = 14000.0 /* end  time*/
+    maxstep    = 400000  /*maximum step*/
+
+[output]
+    prefix    = ParaTest
+    format    = binary
+    time      = 10.0  /* the time interval to output */
+    init      = 0
+    out_cycle = -1
+
+[projectile]
+    material = dunite_
+    radiu    = 290.0e3
+    center   = [0.0, 290.0e3]
+    velocity = [0.0,-1.6e4]
+    damage   = [const,1.0]
+    pressure = [const,1.0]
+    temperature = [const,293.0]
+    density = [derived,]
+
+[target]
+    type     = sphere
+    r_planet = 3390.0e3
+    number   = 3
+    material = [ basalt_ , dunite_ , iron___ ]
+    depth    = [ 30.0e3  , 1830.0e3, 1590.0e3  ]
+    damage   = [const,0.0]
+    temperature = [convective, 293.0]
+    surf_dtdz = 30.0e-3
+    surf_gravity = 3.72
+    d_lith   = 50.0e3
+    max_depth = 3390.0e3
+
+[condition]
+    gravity = [0., -3.72]
+
+[boundary]
+    bottom= freeslip
+    top   = outflow
+    left  = freeslip
+    right = outflow
+
+
+[material]
+    nm      = 4
+    // the first material is reserved for vacuum, cannot be changed !!!
+    postfix = [null   ,  aneos  ,   aneos, aneos]
+    name    = [vacuum_,  basalt_, dunite_, iron___]
+
+    // other
+    Poisson = [,         0.30,         0.25, 0.30]
+
+    // Thermal parameters
+    SimonA   = [,  6.00e9,  1.52e9,  1.07e11]
+    SimonC   = [,    3.00,    4.05,    1.76]
+    SimonT0  = [, 1.393e3, 1.373e3, 1.811e3]
+    OhnakaXi = [,     1.2,     1.2,     1.2]
+    Tdelta   = [,   500.0,    500.0,   500.0]
+
+    // (Rock) strength parameters
+    yshear  = [,RockStrengthT,RockStrengthT,VonMises2]
+    yint0   = [,1.00e7 ,1.00e7, 1.00e8]
+    yintfri = [,1.20   ,1.20  , 0.00]
+    yintlim = [,3.50e9 ,3.50e9, 5.0e8]
+    ydam0   = [,1.0e4  ,1.00e4, 1.0e8]
+    ydamfri = [,0.60   ,  0.60, 0.00]
+    ydamlim = [,3.50e9 ,3.50e9, 5.0e8]
+
+    // damage model
+    damage  = [,SimpleShear,SimpleShear,SimpleShear]
+    IvanA   = [,    1.0e-4 , 1.0e-4,  1.0e-4]
+    IvanB   = [,    1.0e-11,1.0e-11, 1.0e-11]
+    IvanC   = [,      3.0e8,  3.0e8,   3.0e8]
+
+
+    // ACFL Block Model parameter
+    BlockSize  = [, 1.0e5 , 1.0e5 , 7200.0 ]
+    GammaEta   = [,8.00e-3,8.00e-3,8.00e-3 ]
+    GammaBeta  = [, 1.15e2,  0.5e2, 0.00e2 ]
+    Toff       = [,   60.0,   60.0,  -16.0 ]
+    Cvib       = [,    0.1,    0.1,    0.1 ]
+    Vibmax     = [,  200.0,  200.0,  200.0 ]
+    Pvlim      = [, 2.5e10, 2.5e10, 2.5e10 ]
+    
+    // other strength parameters
+    JcminP     = [,-1.0e8,-1.0e8,-1.0e8]
+
+[numerical]
+    AVISQ  = 1.20  /*quad*/
+    AVISL  = 0.24  /*linear*/
+    MaxVelocity = -1.67
+    MinDensity  = 0.1
+    damping   = ctlg
+    damp_time = 30.0
+    DampX = 30
+    DampY = 30
+    LambdaX = 10.
+    LambdaY = 10.
+    partpres = 0
