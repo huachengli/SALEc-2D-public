@@ -15,11 +15,11 @@ Features implemented in SALEc2d:
 ##### compare with iSALE2d
 [Parallel numerical simulation of impact crater with perfect matched layers](https://arxiv.org/abs/2403.04267)
 [iSALE-2D unexpected crashed condition](http://dx.doi.org/10.13140/RG.2.2.36277.45282)
-![image](example/sup_crash_compare.mp4)
+![image](https://github.com/huachengli/SALEc-2D-public/blob/main/example/sup_crash_compare.mp4)
 
 ```html
-<video id="video" controls="" preload="none" poster="封面">
-      <source id="mp4" src="example/sup_crash_compare.mp4" type="video/mp4">
+<video id="video" controls="" preload="none" poster="">
+      <source id="mp4" src="https://github.com/huachengli/SALEc-2D-public/blob/main/example/sup_crash_compare.mp4" type="video/mp4">
 </videos>
 ```
 
@@ -31,7 +31,7 @@ left panel (x<0) is the result from iSALE2D and right panel(x>0) is the stable s
 
 [input](example/d112v110p05.inp)
 
-![image](example\zy_d112v125.gif)
+![image](example/zy_d112v125.gif)
 
 ##### complex crater
 
