@@ -243,6 +243,7 @@ void load_mesh_info(InputFile * ifp, mesh2d_info * _minfo, const char * eospath)
     load_state_reference(ifp,_minfo->ref,_minfo->n_materials);
     load_target_info(ifp,&(_minfo->tinfo));
     load_projectile_info(ifp,&(_minfo->pinfo));
+    load_target_addition_info(ifp,&(_minfo->tainfo));
 }
 
 

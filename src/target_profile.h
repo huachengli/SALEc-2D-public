@@ -48,6 +48,7 @@ void LoadTargetProfile(InputFile * ifp, target_definition * _tdef);
 void init_material_distribution(mesh2d_info * _minfo, sale2d_var * _sale);
 void init_material_plane_distribution(mesh2d_info * _minfo, sale2d_var * _sale);
 void init_material_sphere_distribution(mesh2d_info * _minfo, sale2d_var * _sale);
+void init_material_target_addition(mesh2d_info * _minfo, sale2d_var * _sale);
 void build_target_profile(target_profile * _tprof, mesh2d_info * _minfo, sale2d_var * _sale);
 
 #endif //SALE_REBUILD_TARGET_PROFILE_H

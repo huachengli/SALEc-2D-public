@@ -1,0 +1,144 @@
+# inputfile of sale2d
+[processor]
+    npgx    = 8 /* number of processors in X direction */
+    npgy    = 8
+
+[mesh]
+    dx  = 1.0e3 /*spacing of grid in X direction */
+    dy  = 1.0e3
+    npx = 128  /* number of vertexes in X direction */
+    npy = 128
+    Oy  = 0.55
+    Ox  = 0.0
+    ext = on
+    ex  = [1.05,  0,40]
+    ey  = [1.05, 40,40]
+
+[cycle]
+    dt0        = 5.0e-4
+    maxdt      = 5.0e-1
+    time0      = 0.0     /*start time*/
+    time1      = 5401.0 /* end  time*/
+    maxstep    = 20000000  /*maximum step*/
+
+[output]
+    prefix    = ParaTest
+    format    = binary
+    time      = 1.0  /* the time interval to output */
+    init      = 0
+    out_cycle = -1
+
+[projectile]
+    material = dunite_
+    radiu    =  20.0e3
+    center   = [0.0, 20.0e3]
+    velocity = [0.0,-1.5e4]
+    damage   = [const,1.0]
+    pressure = [const,1.0]
+    temperature = [const,293.0]
+    density = [derived,]
+
+[target]
+    type     = plane
+    r_planet = 1750.0e3
+    number   = 2
+    material = [ gabbro1 , dunite_ ,iron___ ]
+    depth    = [ 40.0e3  , 1350.0e3 , 350.0e3 ]
+    damage   = [const,0.0]
+    temperature = [convective, 273.0]
+    surf_dtdz = 10.0e-3
+    surf_gravity = 1.63
+    d_lith = 144.35e3
+    d_mantle = -1.0
+    max_depth = 1750.0e3
+
+[addition]
+    nobject = 3
+    material = [vacuum_, dunite_, gabbro1]
+    type      = [sphere, sphere, cube]
+    parameter = [pa, pb, pc]
+    // sphere parameters
+    // center_x, center_y, radius, velocity_x, velocity_y, tem, pre, damage, porosity
+    // -1 represent use ambient values from target setting
+    pa = [0,-20e3,10e3,0,0,-1,-1,-1,-1]
+    pb = [40e3, -30e3, 10e3, 0,0, -1,-1,-1,-1]
+    // cube parameters
+    // leftbottom position (lbx,lby), height vector (hx,hy), width vector (wx,wy)
+    // velocity (vx,vy), tem, pre, dam, pty
+    pc = [40e3, -60e3, 4e3, 10e3, -4e3, 12e3, 0,0,-1,-1,-1,-1]
+[condition]
+    gravity = [0., -1.63]
+
+[boundary]
+    bottom= freeslip
+    top   = outflow
+    left  = freeslip
+    right = freeslip
+
+
+[material]
+    nm      = 4
+    // the first material is reserved for vacuum, cannot be changed !!!
+    postfix = [null   ,  tillotson  ,   aneos, aneos]
+    name    = [vacuum_,  gabbro1, dunite_, iron___]
+
+    // other
+    Poisson = [,         0.25,         0.25, 0.30]
+
+    // Thermal parameters
+    SimonA   = [,  1.84e9,  1.52e9,  1.07e11]
+    SimonC   = [,    7.27,    4.05,    1.76]
+    SimonT0  = [, 1.513e3, 1.373e3, 1.811e3]
+    OhnakaXi = [,     1.2,     1.2,     1.2]
+    Tdelta   = [,     0.0,     0.0,   350.0]
+    PolyLiq  = [,       0,      0,     0]
+    Tlidc1   = [, 1521.15, 1748.15, 0.]
+    Tlidc2   = [,    95.3,    80.0, 0.]
+    Tlidc3   = [,   -2.26,    -3.2, 0.]
+    PolySol  = [,       0,       0, 0]
+    Tsolc1   = [,  1325.81,  1358.85, 0]
+    Tsolc2   = [,   104.75,   132.90, 0]
+    Tsolc3   = [,    -2.46,    -5.10, 0]
+
+    // (Rock) strength parameters
+    yshear  = [,RockStrengthT,RockStrengthT,VonMises1]
+    yint0   = [,3.19e7 ,1.00e7, 1.00e8]
+    yintfri = [,1.00   ,1.20  , 0.00]
+    yintlim = [,2.47e9 ,3.50e9, 5.0e8]
+    ydam0   = [,1.0e5  ,1.00e4, 1.0e8]
+    ydamfri = [,0.70   ,  0.60, 0.00]
+    ydamlim = [,2.47e9 ,3.50e9, 5.0e8]
+
+    // damage model
+    damage  = [,SimpleShear,SimpleShear,SimpleShear]
+    IvanA   = [,    1.0e-4 , 1.0e-4,  1.0e-4]
+    IvanB   = [,    1.0e-11,1.0e-11, 1.0e-11]
+    IvanC   = [,      3.0e8,  3.0e8,   3.0e8]
+
+
+    // ACFL Block Model parameter
+    BlockSize  = [, 20.0e3 , 20.0e3 , 20.0e3]
+    GammaEta   = [,1.00e-3,8.00e-2,0.0e-3 ]
+    GammaBeta  = [, 2.0e2,  0.5e2, 0.00e2 ]
+    Toff       = [,   16.0,   16.0,   16.0 ]
+    Cvib       = [,    0.1,    0.1,    0.1 ]
+    Vibmax     = [,  200.0,  200.0,  200.0 ]
+    Pvlim      = [, 2.5e10, 2.5e10, 2.5e10 ]
+    
+    // other strength parameters
+    JcminP     = [,-1.0e8,-1.0e8,-1.0e8]
+    // melt viscosity
+    viscosityM = [,1.0e10,1.0e10,1.0e10]
+
+[numerical]
+    AVISQ  = 1.20  /*quad*/
+    AVISL  = 0.24   /*linear*/
+    MaxVelocity = -1.67
+    MinDensity  = 0.1
+    damping   = pml2
+    DampX = 32
+    DampY = 32
+    LambdaX = 10.
+    LambdaY = 10.
+    partpres = 0
+    tarcer_strip = 1

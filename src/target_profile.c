@@ -483,6 +483,88 @@ void load_target_info(InputFile * ifp, target_info * _tinfo)
     }
 }
 
+void load_target_addition_info(InputFile * ifp, target_addition_info * _tainfo)
+{
+    _tainfo->nobject = GetValueI(ifp,"addition.nobject","0");
+    // load name of materials,
+    char material_name[MAXMAT][80];
+    int nmat = GetValueI(ifp,"material.nm","3");
+    for(int matid=0;matid<nmat;++matid)
+    {
+        GetValueSk(ifp,"material.name",material_name[matid],matid,"vacuum_");
+    }
+
+    for(int k_object=0; k_object<_tainfo->nobject;++k_object)
+    {
+        // check the material index of addition
+        char tmp_name[80];
+        GetValueSk(ifp,"addition.material",tmp_name,k_object,"unknown");
+        _tainfo->material[k_object] = -1;
+        for(int matid=0;matid<nmat;++matid)
+        {
+            if(0==strcasecmp(tmp_name,material_name[matid]))
+            {
+                _tainfo->material[k_object] = matid;
+                break;
+            }
+        }
+
+        if(material_name[k_object] < 0)
+        {
+            fprintf(stderr,"cannot get material id of %s in target addition\n",tmp_name);
+            exit(0);
+        }
+
+        char tmp_type[80], parameter_name[80];
+        GetValueSk(ifp,"addition.type",tmp_type,k_object,"unknown");
+        GetValueSk(ifp,"addition.parameter",parameter_name,k_object,"unknown");
+        char parameter_handle[100];
+        snprintf(parameter_handle,100,"addition.%s",parameter_name);
+        int r = SearchInput(ifp, parameter_handle);
+        if(r<0)
+        {
+            fprintf(stdout,"can not find parameter:%s\n", parameter_handle);
+            exit(0);
+        }
+
+        if(strcasecmp("cube",tmp_type) == 0)
+        {
+            // left-bottom position (lbx,lby)
+            // height vector (hx,hy)
+            // width vector (wx,wy)
+            // velocity (vx,vy)
+            // temperature (t)
+            // pressure (p)
+            // damage (d)
+            // porosity
+            _tainfo->addition_type[k_object] = cube_addition;
+            for(int j=0;j<12;++j)
+            {
+                _tainfo->parmeters[k_object][j] = GetValueDk(ifp,parameter_handle,j,"-1");
+            }
+        }
+        else if(strcasecmp("sphere",tmp_type)==0)
+        {
+            // center (cx,cy)
+            // radius (r)
+            // velcoity (vx,vy)
+            // temperature (t)
+            // pressure (p)
+            // damage (d)
+            // porosity
+            _tainfo->addition_type[k_object] = sphere_addition;
+            for(int j=0;j<9;++j)
+            {
+                _tainfo->parmeters[k_object][j] = GetValueDk(ifp,parameter_handle,j,"-1");
+            }
+        }
+        else
+        {
+            _tainfo->addition_type[k_object] = unknown_addition;
+        }
+    }
+}
+
 void init_material_distribution(mesh2d_info * _minfo, sale2d_var * _sale)
 {
     if(_minfo->tinfo.layer_type == plane_target)
@@ -497,6 +579,7 @@ void init_material_distribution(mesh2d_info * _minfo, sale2d_var * _sale)
     {
         fprintf(stdout,"undefined layer type in %s\n",__func__);
     }
+    init_material_target_addition(_minfo,_sale);
 }
 void init_material_plane_distribution(mesh2d_info * _minfo, sale2d_var * _sale)
 {
@@ -910,6 +993,162 @@ void init_material_sphere_distribution(mesh2d_info * _minfo, sale2d_var * _sale)
 
     UnallocateTargetProfile(&targetProfile);
 }
+
+void init_material_target_addition(mesh2d_info * _minfo, sale2d_var * _sale)
+{
+    /*
+     * init the materials distribution of target addition
+     * the position of every vertex (v_pos) and element (e_pos) has been set in init_mesh_pos().
+     * parameters (e_suf, e_vof, e_grad) related to position is initialized at the same time.
+     *
+     * this subroutine set the initialize values for
+     * STEP 1/ e_vof, v_vel, e_pre, e_tem, e_dam FROM mesh info
+     * STEP 2/ m_vof = e_vof, m_den, m_eng FROM interpolate_eos_*
+     * STEP 3/ e_csd, e_den, e_eng, e_vel FROM *
+     */
+
+    // target addition info in _minfo->tainfo
+    // region, STEP 1
+    proc_info_2d * e_proc = _sale->e_vof->proc_self;
+    int e_nx = e_proc->nx, e_ny = e_proc->ny;
+    int nmat = _sale->nmat;
+
+    for(int k=0;k<e_nx;++k)
+    {
+        for(int j=0;j<e_ny;++j)
+        {
+            fv_id_2d elid = {.x=k,.y=j};
+            // in the initialization stage, all the elements in this progress,
+            // none is skipped recording to the node_type
+            char * epos_cptr, *evof_cptr, *epre_cptr, *etem_cptr,*edam_cptr,*ewpt_cptr;
+            _sale->foe->get_data(&elid,&epos_cptr,_sale->e_pos);
+            _sale->foe->get_data(&elid,&evof_cptr,_sale->e_vof);
+            _sale->foe->get_data(&elid,&epre_cptr,_sale->e_pre);
+            _sale->foe->get_data(&elid,&etem_cptr,_sale->e_tem);
+            _sale->foe->get_data(&elid,&edam_cptr,_sale->e_dam);
+            _sale->foe->get_data(&elid,&ewpt_cptr,_sale->e_wpt);
+            double * epos = (double *)epos_cptr;
+            double * evof = (double *)evof_cptr;
+            double * epre = (double *)epre_cptr;
+            double * etem = (double *)etem_cptr;
+            double * edam = (double *)edam_cptr;
+            double * ewpt = (double *)ewpt_cptr;
+
+
+            double * evel = NULL, *mden = NULL, *meng=NULL;
+            _sale->foe->get_double(&elid,&mden,_sale->m_den);
+            _sale->foe->get_double(&elid,&meng,_sale->m_eng);
+            _sale->foe->get_double(&elid,&evel,_sale->e_vel);
+            vec_zero(evel,2);
+            double *etps,*evib;
+            _sale->foe->get_double(&elid,&etps,_sale->e_tps);
+            _sale->foe->get_double(&elid,&evib,_sale->e_vib);
+            etps[0] = 0.;
+            evib[0] = 0.;
+
+            double *mpty_ptr,*ecvs_ptr;
+            _sale->foe->get_double(&elid,&mpty_ptr,_sale->m_pty);
+            _sale->foe->get_double(&elid,&ecvs_ptr,_sale->e_cvs);
+
+            vec_number(mpty_ptr,nmat,1.0);
+            *ecvs_ptr = 0.;
+
+
+            for(int k_object=0;k_object<_minfo->tainfo.nobject;++k_object)
+            {
+                int oid = _minfo->tainfo.material[k_object];
+                double tem,pre,dam,pty,vel[2];
+                if(_minfo->tainfo.addition_type[k_object] == cube_addition)
+                {
+                    double lbp[2] = {_minfo->tainfo.parmeters[k_object][0],_minfo->tainfo.parmeters[k_object][1]};
+                    double xa[2] = {_minfo->tainfo.parmeters[k_object][2],_minfo->tainfo.parmeters[k_object][3]};
+                    double ya[2] = {_minfo->tainfo.parmeters[k_object][4],_minfo->tainfo.parmeters[k_object][5]};
+                    vel[0] = _minfo->tainfo.parmeters[k_object][6];
+                    vel[1] = _minfo->tainfo.parmeters[k_object][7];
+                    tem = _minfo->tainfo.parmeters[k_object][8];
+                    pre = _minfo->tainfo.parmeters[k_object][9];
+                    dam = _minfo->tainfo.parmeters[k_object][10];
+                    pty = _minfo->tainfo.parmeters[k_object][11];
+
+                    double x0[2] = {0,0};
+                    liner_op(x0,2,epos,lbp,1,-1);
+                    double lxa = vec_len(xa,2);
+                    double lya = vec_len(ya,2);
+                    double xl = vec_dot(x0,xa,2)/lxa/lxa;
+                    double yl = vec_dot(x0,ya,2)/lya/lya;
+
+
+                    if(xl*(1-xl) <0 || yl*(1-yl)<0)
+                        continue;
+                }
+                else if(_minfo->tainfo.addition_type[k_object] == sphere_addition)
+                {
+                    double center[2] = {_minfo->tainfo.parmeters[k_object][0],_minfo->tainfo.parmeters[k_object][1]};
+                    double radius = _minfo->tainfo.parmeters[k_object][2];
+                    vel[0] = _minfo->tainfo.parmeters[k_object][3];
+                    vel[1] = _minfo->tainfo.parmeters[k_object][4];
+                    tem = _minfo->tainfo.parmeters[k_object][5];
+                    pre = _minfo->tainfo.parmeters[k_object][6];
+                    dam = _minfo->tainfo.parmeters[k_object][7];
+                    pty = _minfo->tainfo.parmeters[k_object][8];
+
+                    double object_distance = vec_dis(center, epos, 2);
+                    if(object_distance > radius)
+                        continue;
+                }
+                else if(_minfo->tainfo.addition_type[k_object] == unknown_addition)
+                {
+                    fprintf(stdout,"no method to initialize for unknown_addition type %d\n",k_object);
+                    exit(0);
+                }
+                else
+                {
+                    fprintf(stdout,"no method to initialize for addition %d\n",k_object);
+                    exit(0);
+                }
+
+                tem = tem>=0? tem: etem[0];
+                pre = pre>=0? pre: epre[0];
+                pty = pty>=0? pty: mpty_ptr[oid];
+                dam = dam>=0? dam: edam[0];
+
+                if(oid == VACUUM)
+                {
+                    vec_zero(evof,nmat);
+                    vec_zero(mden,nmat);
+                    vec_zero(meng,nmat);
+                    evof[VACUUM] = 1.0;
+                    ewpt[0] = ewpt[1] = ewpt[2] = ewpt[3] = 1.0;
+                }
+                else
+                {
+                    vec_zero(evof,nmat);
+                    vec_zero(mden,nmat);
+                    vec_zero(meng,nmat);
+
+                    *epre = pre;
+                    *etem = tem;
+                    *edam = dam;
+
+                    evof[oid] = 1.0;
+                    mden[oid] = interpolate_eos_tp(_sale->etb+oid,
+                                                             tem,
+                                                             pre,
+                                                             EOSDEN)/pty;
+                    meng[oid] = interpolate_eos_tp(_sale->etb+oid,
+                                                             tem,
+                                                             pre,
+                                                             EOSENG)/pty;
+                    mpty_ptr[oid] =  pty;
+                    ewpt[0] = ewpt[1] = ewpt[2] = ewpt[3] = -0.25;
+                    vec_copy(vel, evel, 2);
+                }
+            }
+        }
+    }
+
+}
+
 
 
 void build_target_profile(target_profile * _tprof, mesh2d_info * _minfo, sale2d_var * _sale)

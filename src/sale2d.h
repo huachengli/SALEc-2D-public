@@ -289,6 +289,33 @@ typedef struct TargetDefition
 
 void load_target_info(InputFile * ifp, target_info * _tinfo);
 
+#define MAXAOBJS 32
+#define MAXAOBJPARS 32
+typedef enum TargetAdditionType
+{
+    sphere_addition,
+    cube_addition,
+    unknown_addition
+} target_addition_type;
+
+typedef enum TargetAdditionStateType
+{
+    const_temperature,
+    automatic_state,
+    unknown_state
+} target_addition_state_type;
+
+typedef struct TargetAdditionDefition
+{
+    int nobject;
+    int material[MAXAOBJS];
+    double parmeters[MAXAOBJS][MAXAOBJPARS];
+    target_addition_type addition_type[MAXAOBJS];
+    // target_addition_state_type state_type[MAXAOBJS];
+} target_addition_info;
+
+void load_target_addition_info(InputFile * ifp, target_addition_info * _tainfo);
+
 typedef struct mesh2d_info_impl
 {
     int npgx;
@@ -320,6 +347,7 @@ typedef struct mesh2d_info_impl
 
     target_info tinfo;
     projectile_info pinfo;
+    target_addition_info tainfo;
     double gravity[3];
 
 
