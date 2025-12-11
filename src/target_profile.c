@@ -486,6 +486,10 @@ void load_target_info(InputFile * ifp, target_info * _tinfo)
 void load_target_addition_info(InputFile * ifp, target_addition_info * _tainfo)
 {
     _tainfo->nobject = GetValueI(ifp,"addition.nobject","0");
+    if(_tainfo->nobject <= 0)
+    {
+        return;
+    }
     // load name of materials,
     char material_name[MAXMAT][80];
     int nmat = GetValueI(ifp,"material.nm","3");
@@ -1007,6 +1011,11 @@ void init_material_target_addition(mesh2d_info * _minfo, sale2d_var * _sale)
      * STEP 3/ e_csd, e_den, e_eng, e_vel FROM *
      */
 
+    if(_minfo->tainfo.nobject <= 0)
+    {
+        return;
+    }
+
     // target addition info in _minfo->tainfo
     // region, STEP 1
     proc_info_2d * e_proc = _sale->e_vof->proc_self;
@@ -1033,25 +1042,23 @@ void init_material_target_addition(mesh2d_info * _minfo, sale2d_var * _sale)
             double * etem = (double *)etem_cptr;
             double * edam = (double *)edam_cptr;
             double * ewpt = (double *)ewpt_cptr;
-
-
             double * evel = NULL, *mden = NULL, *meng=NULL;
             _sale->foe->get_double(&elid,&mden,_sale->m_den);
             _sale->foe->get_double(&elid,&meng,_sale->m_eng);
             _sale->foe->get_double(&elid,&evel,_sale->e_vel);
-            vec_zero(evel,2);
+            // vec_zero(evel,2);
             double *etps,*evib;
             _sale->foe->get_double(&elid,&etps,_sale->e_tps);
             _sale->foe->get_double(&elid,&evib,_sale->e_vib);
-            etps[0] = 0.;
-            evib[0] = 0.;
+            //etps[0] = 0.;
+            //evib[0] = 0.;
 
             double *mpty_ptr,*ecvs_ptr;
             _sale->foe->get_double(&elid,&mpty_ptr,_sale->m_pty);
             _sale->foe->get_double(&elid,&ecvs_ptr,_sale->e_cvs);
 
-            vec_number(mpty_ptr,nmat,1.0);
-            *ecvs_ptr = 0.;
+            //vec_number(mpty_ptr,nmat,1.0);
+            //*ecvs_ptr = 0.;
 
 
             for(int k_object=0;k_object<_minfo->tainfo.nobject;++k_object)
