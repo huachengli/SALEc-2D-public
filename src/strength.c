@@ -67,6 +67,31 @@ void update_e_stress(sale2d_var * _sale, node_type _nt, double dt)
             melt_den_ref  += evof_ptr[matid]*_sale->etb[matid].ref->MeltDen;
         }
 
+        // check the porosity
+        double material_porosity = 0.0;
+        if(_sale->porosity_model)
+        {
+            double material_vof = 0.0;
+            double *mpty_ptr=NULL;
+            _opt->get_double(&lid,&mpty_ptr,_sale->m_pty);
+            for (int matid=1;matid<_sale->nmat;++matid)
+            {
+                if(evof_ptr[matid] < TOLVOF) continue;
+                material_porosity += evof_ptr[matid]*mpty_ptr[matid];
+                material_vof += evof_ptr[matid];
+            }
+            material_porosity /= material_vof;
+        }
+        else
+        {
+            material_porosity = 1.0;
+        }
+        material_porosity = Max(material_porosity, 1.0);
+
+        // apply porosity to vapor/melt ref
+        vapor_den_ref /= material_porosity;
+        melt_den_ref /= material_porosity;
+
         int solid_cell = 0;
         int melt_cell  = 0;
         int vapor_cell = 0;
